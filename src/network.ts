@@ -49,6 +49,24 @@ export class FoodChainNetwork {
         };
 
         this.network = new vis.Network(container, data, options);
+
+        // Add double-click event handler
+        this.network.on('doubleClick', async (params: any) => {
+            // Check if a node was clicked
+            if (params.nodes.length > 0) {
+                const nodeId = params.nodes[0];
+                const node = this.nodes.get(nodeId);
+                if (node) {
+                    // Find and trigger the input and submit elements
+                    const input = document.getElementById('animal-input') as HTMLInputElement;
+                    const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+                    if (input && submitBtn) {
+                        input.value = node.label;
+                        submitBtn.click();
+                    }
+                }
+            }
+        });
     }
 
     addAnimal(animal: AnimalData) {
