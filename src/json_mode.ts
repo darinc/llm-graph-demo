@@ -117,6 +117,7 @@ async function main() {
     clearBtn.addEventListener('click', () => {
         network.clear();
         lastAnimalData = {};
+        updateNetworkStats(network);
         (window as any).lastAnimalData = lastAnimalData;
         const jsonDisplay = document.getElementById('json-display');
         if (jsonDisplay) {
@@ -228,6 +229,7 @@ async function main() {
                 }
                 lastAnimalData[animalData.commonName] = animalData;
                 network.addAnimal(animalData);
+                updateNetworkStats(network);
             }
             
             input.value = ''; // Clear input
@@ -241,6 +243,20 @@ async function main() {
             input.classList.remove('loading');
         }
     });
+}
+
+function updateNetworkStats(network: FoodChainNetwork) {
+    const stats = network.getNetworkStats();
+    
+    // Update node statistics
+    document.getElementById('total-nodes')!.textContent = stats.nodes.total.toString();
+    document.getElementById('placeholder-nodes')!.textContent = stats.nodes.placeholders.toString();
+    document.getElementById('complete-nodes')!.textContent = stats.nodes.complete.toString();
+    
+    // Update edge statistics
+    document.getElementById('total-edges')!.textContent = stats.edges.total.toString();
+    document.getElementById('most-connected')!.textContent = stats.edges.mostConnected;
+    document.getElementById('avg-connections')!.textContent = stats.edges.avgConnections;
 }
 
 async function toggleAutomatic(
@@ -278,6 +294,7 @@ async function toggleAutomatic(
 
             // Wait for the response and update the JSON display
             await new Promise(resolve => setTimeout(resolve, 5000));
+            updateNetworkStats(network);
             
             // Show the animal details for the processed node
             const jsonDisplay = document.getElementById('json-display');

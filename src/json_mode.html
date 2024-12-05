@@ -103,6 +103,27 @@
           <pre id="json-content"></pre>
       </div>
     </div>
+    <div id="network-stats" style="margin-top: 20px; padding: 10px; background-color: #f5f5f5; border-radius: 4px;">
+        <h3>Network Statistics</h3>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+            <div>
+                <strong>Nodes:</strong>
+                <ul id="node-stats" style="margin: 5px 0;">
+                    <li>Total: <span id="total-nodes">0</span></li>
+                    <li>Placeholders: <span id="placeholder-nodes">0</span></li>
+                    <li>Complete: <span id="complete-nodes">0</span></li>
+                </ul>
+            </div>
+            <div>
+                <strong>Relationships:</strong>
+                <ul id="edge-stats" style="margin: 5px 0;">
+                    <li>Total Connections: <span id="total-edges">0</span></li>
+                    <li>Most Connected: <span id="most-connected">-</span></li>
+                    <li>Average Connections: <span id="avg-connections">0</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
     <label id="init-label"> </label>
 
     <script type="module" src="./json_mode.ts"></script>
