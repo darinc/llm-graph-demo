@@ -155,9 +155,10 @@ async function main() {
         const animal = standardizeAnimalName(input.value.trim());
         if (!animal) return;
 
-        addLogEntry('button', autoCompleteRunning ? 
-            `Requesting animal via Automatic: ${animal}` : 
-            `User requested animal via text box: ${animal}`);
+        // Only log if NOT in automatic mode
+        if (!autoCompleteRunning) {
+            addLogEntry('button', `User requested animal via text box: ${animal}`);
+        }
 
         // Get spinner element
         const spinner = document.getElementById('loading-spinner');
