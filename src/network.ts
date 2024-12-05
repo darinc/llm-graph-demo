@@ -4,15 +4,44 @@ declare const vis: any;
 function standardizeAnimalName(name: string): string {
     // Common irregular plurals
     const irregularPlurals: { [key: string]: string } = {
-        'mouse': 'mice',
-        'goose': 'geese',
-        'deer': 'deer',
         'sheep': 'sheep',
         'fish': 'fish',
+        'deer': 'deer',
         'moose': 'moose',
+        'bison': 'bison',
+        'salmon': 'salmon',
+        'shrimp': 'shrimp',
+        'squid': 'squid',
+
+        // -f/-fe to -ves
         'wolf': 'wolves',
         'calf': 'calves',
-        'leaf': 'leaves',
+        'elf': 'elves',
+
+        // -ouse to -ice
+        'mouse': 'mice',
+        'louse': 'lice',
+        'grouse': 'grouse',
+
+        // -oose to -eese
+        'goose': 'geese',
+
+        // Completely irregular
+        'ox': 'oxen',
+
+        // -o endings
+        'buffalo': 'buffalo',
+        'flamingo': 'flamingos',
+        'mosquito': 'mosquitoes',
+
+        // Latin derived
+        'octopus': 'octopi',
+        'hippopotamus': 'hippopotami',
+
+        // Special cases
+        'platypus': 'platypuses',
+        'mongoose': 'mongooses'
+
     };
 
     name = name.toLowerCase().trim();
@@ -51,40 +80,6 @@ interface PlaceholderData {
     note: string;
     eats?: string[];
     eatenBy?: string[];
-}
-
-export function standardizeAnimalName(name: string): string {
-    // Common irregular plurals
-    const irregularPlurals: { [key: string]: string } = {
-        'mouse': 'mice',
-        'goose': 'geese',
-        'deer': 'deer',
-        'sheep': 'sheep',
-        'fish': 'fish',
-        'moose': 'moose',
-        'wolf': 'wolves',
-        'calf': 'calves',
-        'leaf': 'leaves',
-    };
-
-    name = name.toLowerCase().trim();
-
-    // Check for irregular plurals first
-    if (irregularPlurals[name]) {
-        return irregularPlurals[name];
-    }
-
-    // If it's already plural, return as is
-    if (name.endsWith('s')) {
-        return name;
-    }
-
-    // Regular pluralization
-    if (name.endsWith('y')) {
-        return name.slice(0, -1) + 'ies';
-    } else {
-        return name + 's';
-    }
 }
 
 export interface AnimalData {
@@ -202,7 +197,7 @@ export class FoodChainNetwork {
                         // Store the node to replace
                         (window as any).nodeToReplace = node.label.toLowerCase();
                         input.value = node.label.toLowerCase();
-                        
+
                         // Log only the double-click action
                         const logEntry = document.getElementById('log-entries');
                         if (logEntry) {
@@ -213,10 +208,10 @@ export class FoodChainNetwork {
                             logEntry.appendChild(entry);
                             logEntry.scrollTop = logEntry.scrollHeight;
                         }
-                        
+
                         // Set a flag to prevent duplicate logging
                         (window as any).doubleClickInitiated = true;
-                        
+
                         submitBtn.click();
                     }
                 }
@@ -228,11 +223,11 @@ export class FoodChainNetwork {
         // Standardize the common name
         const label = standardizeAnimalName(animal.commonName);
         animal.commonName = label;  // Update the stored data
-        
+
         // Standardize the prey and predator names
         animal.eats = animal.eats.map(prey => standardizeAnimalName(prey));
         animal.eatenBy = animal.eatenBy.map(predator => standardizeAnimalName(predator));
-        
+
         // Define colors for each diet type
         const dietColors = {
             herbivore: '#4CAF50',  // Green
@@ -245,11 +240,11 @@ export class FoodChainNetwork {
         const baseSize = 20;
         const maxSize = 50;
         const sizeScale = Math.min(Math.max(animal.size * 10, baseSize), maxSize);
-        
+
         // Check if this animal might be a more specific version of an existing node
         const existingNodes = this.nodes.get({
-            filter: node => node.label.toLowerCase().includes(label) || 
-                          label.includes(node.label.toLowerCase())
+            filter: node => node.label.toLowerCase().includes(label) ||
+                label.includes(node.label.toLowerCase())
         });
 
         if (existingNodes.length > 0) {
@@ -275,7 +270,7 @@ export class FoodChainNetwork {
         const addPlaceholderNode = (nodeId: string, relationship: 'eats' | 'eatenBy', sourceNode: string) => {
             // Standardize the node ID first
             nodeId = standardizeAnimalName(nodeId);
-            
+
             if (!this.nodes.get(nodeId)) {
                 // Create the placeholder data structure BEFORE adding the node
                 const placeholderData: PlaceholderData = {
@@ -392,7 +387,7 @@ export class FoodChainNetwork {
     public updateNodeAndNeighbors(oldName: string, newName: string) {
         // Get the animal data first since we need it for styling
         const animalData = (window as any).lastAnimalData[newName];
-        
+
         // Define colors for each diet type
         const dietColors = {
             herbivore: '#4CAF50',  // Green
@@ -493,37 +488,37 @@ export class FoodChainNetwork {
     public getNetworkStats() {
         const nodes = this.nodes.get();
         const edges = this.edges.get();
-        
+
         // Calculate node statistics
         const totalNodes = nodes.length;
         const placeholderNodes = nodes.filter(node => (node as any).placeholder).length;
         const completeNodes = totalNodes - placeholderNodes;
-        
+
         // Calculate edge statistics
         const totalEdges = edges.length;
-        
+
         // Calculate connection counts per node
         const connectionCounts = new Map<string, number>();
         nodes.forEach(node => {
-            const connected = edges.filter(edge => 
+            const connected = edges.filter(edge =>
                 edge.from === node.id || edge.to === node.id
             ).length;
             connectionCounts.set(node.id, connected);
         });
-        
+
         // Find most connected node
-        let mostConnected = {node: '', count: 0};
+        let mostConnected = { node: '', count: 0 };
         connectionCounts.forEach((count, node) => {
             if (count > mostConnected.count) {
-                mostConnected = {node, count};
+                mostConnected = { node, count };
             }
         });
-        
+
         // Calculate average connections
-        const avgConnections = totalNodes > 0 
-            ? (totalEdges * 2 / totalNodes).toFixed(1) 
+        const avgConnections = totalNodes > 0
+            ? (totalEdges * 2 / totalNodes).toFixed(1)
             : '0';
-        
+
         return {
             nodes: {
                 total: totalNodes,
@@ -532,8 +527,8 @@ export class FoodChainNetwork {
             },
             edges: {
                 total: totalEdges,
-                mostConnected: mostConnected.count > 0 
-                    ? `${mostConnected.node} (${mostConnected.count})` 
+                mostConnected: mostConnected.count > 0
+                    ? `${mostConnected.node} (${mostConnected.count})`
                     : '-',
                 avgConnections
             }
