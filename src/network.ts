@@ -94,7 +94,7 @@ export interface AnimalData {
     eats: string[];
     eatenBy: string[];
     size: number;     // Size in meters (length or height)
-    diet: 'herbivore' | 'carnivore' | 'omnivore';
+    diet: 'herbivore' | 'carnivore' | 'omnivore' | 'insectivore';
 }
 
 export class FoodChainNetwork {
@@ -222,7 +222,8 @@ export class FoodChainNetwork {
         const dietColors = {
             herbivore: '#4CAF50',  // Green
             carnivore: '#f44336',  // Red
-            omnivore: '#FF9800'    // Orange
+            omnivore: '#FF9800',   // Orange
+            insectivore: '#9C27B0' // Purple
         };
 
         // Calculate node size (min 20, max 50)
@@ -381,7 +382,8 @@ export class FoodChainNetwork {
         const dietColors = {
             herbivore: '#4CAF50',  // Green
             carnivore: '#f44336',  // Red
-            omnivore: '#FF9800'    // Orange
+            omnivore: '#FF9800',   // Orange
+            insectivore: '#9C27B0' // Purple
         };
 
         // Calculate node size

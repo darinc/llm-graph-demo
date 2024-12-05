@@ -189,7 +189,7 @@ async function main() {
             messages: [
                 {
                     role: "system",
-                    content: "You are a biology expert. Respond only with JSON containing genus, species, common name, what the animal eats (prey), what eats it (predators), size (in meters), and diet type. Use common names for the eats and eatenBy arrays. Use lowercase for all text. For diet, use only 'herbivore', 'carnivore', or 'omnivore'. For size, provide the typical length or height in meters as a number."
+                    content: "You are a biology expert. Respond only with JSON containing genus, species, common name, what the animal eats (prey), what eats it (predators), size (in meters), and diet type. Use common names for the eats and eatenBy arrays. Use lowercase for all text. For diet, use only 'herbivore', 'carnivore', 'omnivore', or 'insectivore'. For size, provide the typical length or height in meters as a number."
                 },
                 {
                     role: "user",
