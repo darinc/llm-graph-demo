@@ -93,6 +93,23 @@ async function main() {
     const network = new FoodChainNetwork(networkContainer);
     (window as any).foodChainNetwork = network;
 
+    // After network initialization, show the template JSON
+    const jsonDisplay = document.getElementById('json-display');
+    const jsonContent = document.getElementById('json-content');
+    if (jsonDisplay && jsonContent) {
+        const template = {
+            "genus": "example_genus",
+            "species": "example_species", 
+            "commonName": "example animal",
+            "eats": ["prey1", "prey2"],
+            "eatenBy": ["predator1", "predator2"],
+            "size": 1.5,
+            "diet": "one of: herbivore, carnivore, omnivore, or insectivore"
+        };
+        jsonDisplay.style.display = 'block';
+        jsonContent.textContent = JSON.stringify(template, null, 2);
+    }
+
     // Setup input handling
     const input = document.getElementById('animal-input') as HTMLInputElement;
     const submitBtn = document.getElementById('submit-btn');
