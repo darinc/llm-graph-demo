@@ -1,0 +1,5 @@
+.aider*
+.env
+.parcel-cache/
+dist/
+node_modules/
