@@ -242,8 +242,19 @@ async function toggleAutomatic(
             await new Promise(resolve => setTimeout(resolve, 500));
             submitBtn.click();
 
-            // Wait for the response
+            // Wait for the response and update the JSON display
             await new Promise(resolve => setTimeout(resolve, 5000));
+            
+            // Show the animal details for the processed node
+            const jsonDisplay = document.getElementById('json-display');
+            const jsonContent = document.getElementById('json-content');
+            if (jsonDisplay && jsonContent) {
+                const animalData = (window as any).lastAnimalData[randomPlaceholder];
+                if (animalData) {
+                    jsonDisplay.style.display = 'block';
+                    jsonContent.textContent = JSON.stringify(animalData, null, 2);
+                }
+            }
         }
     }
 }
