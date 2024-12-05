@@ -1,14 +1,29 @@
 <!doctype html>
 <html>
-  <script>
-    webLLMGlobal = {};
-  </script>
+  <head>
+    <script>
+      webLLMGlobal = {};
+    </script>
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <style>
+      #mynetwork {
+        width: 800px;
+        height: 600px;
+        border: 1px solid lightgray;
+      }
+      #input-container {
+        margin: 20px 0;
+      }
+    </style>
+  </head>
 
   <body>
-    <h2>WebLLM Test Page</h2>
-    Open console to see output.
-    <br />
-    <br />
+    <h2>Food Chain Visualizer</h2>
+    <div id="input-container">
+      <input type="text" id="animal-input" placeholder="Enter an animal...">
+      <button id="submit-btn">Add to Food Chain</button>
+    </div>
+    <div id="mynetwork"></div>
     <label id="init-label"> </label>
 
     <script type="module" src="./json_mode.ts"></script>
