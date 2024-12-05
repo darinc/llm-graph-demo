@@ -1,7 +1,7 @@
 declare const vis: any;
 
 // Helper function for standardizing animal names
-function standardizeAnimalName(name: string): string {
+export function standardizeAnimalName(name: string): string {
     // Common irregular plurals
     const irregularPlurals: { [key: string]: string } = {
         'sheep': 'sheep',
