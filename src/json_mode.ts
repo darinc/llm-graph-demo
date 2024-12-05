@@ -114,6 +114,32 @@ async function main() {
         spinner.style.display = 'inline-block';
         input.classList.add('loading');
 
+        let contextPrompt = `Provide information about ${animal}`;
+
+        // Get existing relationships whether it's a placeholder or being replaced
+        const edges = network.edges.get({
+            filter: (edge: any) => edge.from === animal || edge.to === animal
+        });
+
+        // Build lists of current relationships
+        const currentlyEats: string[] = [];
+        const currentlyEatenBy: string[] = [];
+
+        edges.forEach((edge: any) => {
+            if (edge.from === animal) {
+                currentlyEats.push(edge.to);
+            } else {
+                currentlyEatenBy.push(edge.from);
+            }
+        });
+
+        // Add relationship context to the prompt
+        if (currentlyEats.length > 0 || currentlyEatenBy.length > 0) {
+            contextPrompt += `. Current known relationships - This animal eats: [${currentlyEats.join(', ')}]. `;
+            contextPrompt += `This animal is eaten by: [${currentlyEatenBy.join(', ')}]. `;
+            contextPrompt += `Please maintain these relationships in your response while adding any additional relationships you know of.`;
+        }
+
         const request: webllm.ChatCompletionRequest = {
             stream: false,
             messages: [
@@ -123,7 +149,7 @@ async function main() {
                 },
                 {
                     role: "user",
-                    content: `Provide information about ${animal} in this JSON format: {"genus": "", "species": "", "commonName": "", "eats": [], "eatenBy": [], "size": 0, "diet": ""}`
+                    content: `${contextPrompt} in this JSON format: {"genus": "", "species": "", "commonName": "", "eats": [], "eatenBy": [], "size": 0, "diet": ""}`
                 }
             ],
             max_tokens: 256,

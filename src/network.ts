@@ -174,7 +174,7 @@ export class FoodChainNetwork {
         }
 
         // When adding placeholder nodes, use neutral color and minimum size
-        const addPlaceholderNode = (nodeId: string) => {
+        const addPlaceholderNode = (nodeId: string, relationship: 'eats' | 'eatenBy', sourceNode: string) => {
             if (!this.nodes.get(nodeId)) {
                 this.nodes.add({
                     id: nodeId,
@@ -183,12 +183,37 @@ export class FoodChainNetwork {
                     size: baseSize,    // Minimum size for unknown animals
                     placeholder: true  // Add this flag
                 });
+
+                // Add the relationship edge immediately
+                if (relationship === 'eats') {
+                    // This placeholder eats the source node
+                    if (!this.edges.get({
+                        filter: edge => edge.from === nodeId && edge.to === sourceNode
+                    }).length) {
+                        this.edges.add({
+                            from: nodeId,
+                            to: sourceNode,
+                            label: 'eats'
+                        });
+                    }
+                } else {
+                    // This placeholder is eaten by the source node
+                    if (!this.edges.get({
+                        filter: edge => edge.from === sourceNode && edge.to === nodeId
+                    }).length) {
+                        this.edges.add({
+                            from: sourceNode,
+                            to: nodeId,
+                            label: 'eats'
+                        });
+                    }
+                }
             }
         };
 
         // Add edges for what it eats
         animal.eats.forEach(prey => {
-            addPlaceholderNode(prey);
+            addPlaceholderNode(prey, 'eatenBy', label);
             // Check if edge already exists
             if (!this.edges.get({
                 filter: edge => edge.from === label && edge.to === prey
@@ -203,7 +228,7 @@ export class FoodChainNetwork {
 
         // Add edges for what eats it
         animal.eatenBy.forEach(predator => {
-            addPlaceholderNode(predator);
+            addPlaceholderNode(predator, 'eats', label);
             // Check if edge already exists
             if (!this.edges.get({
                 filter: edge => edge.from === predator && edge.to === label
