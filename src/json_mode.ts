@@ -135,24 +135,46 @@ async function main() {
     const clearBtn = document.getElementById('clear-btn');
     if (!randomBtn || !clearBtn) throw new Error("Buttons not found");
 
-    // List of common animals for random selection
-    const randomAnimals = [
-        "lion", "zebra", "elephant", "giraffe", "penguin", 
-        "shark", "eagle", "snake", "rabbit", "deer",
-        "wolf", "bear", "fox", "owl", "mouse",
-        "hawk", "salmon", "seal", "octopus", "butterfly"
-    ];
 
-    randomBtn.addEventListener('click', () => {
-        // Select a random animal from the list
-        const randomIndex = Math.floor(Math.random() * randomAnimals.length);
-        const randomAnimal = randomAnimals[randomIndex];
+    randomBtn.addEventListener('click', async () => {
+        // Disable the button while processing
+        randomBtn.disabled = true;
         
-        addLogEntry('button', `User clicked Random - selected: ${randomAnimal}`);
-        
-        // Set the input value and trigger the submit button
-        input.value = randomAnimal;
-        submitBtn.click();
+        const request: webllm.ChatCompletionRequest = {
+            stream: false,
+            messages: [
+                {
+                    role: "system",
+                    content: "You are a biology expert. Respond with only a single word: a random animal name. Use the common name, lowercase, singular form."
+                },
+                {
+                    role: "user",
+                    content: "Give me a random animal."
+                }
+            ],
+            max_tokens: 32
+        };
+
+        try {
+            addLogEntry('button', 'User clicked Random - requesting random animal');
+            const reply = await engine.chatCompletion(request);
+            const message = await engine.getMessage();
+            
+            // Clean up the response to ensure we just get the animal name
+            const randomAnimal = message.trim().toLowerCase().split(/[\s\n]/)[0];
+            
+            addLogEntry('button', `Random animal selected: ${randomAnimal}`);
+            
+            // Set the input value and trigger the submit button
+            input.value = randomAnimal;
+            submitBtn.click();
+        } catch (error) {
+            addLogEntry('button', `Error getting random animal: ${error.message}`);
+            console.error("Error getting random animal:", error);
+        } finally {
+            // Re-enable the button
+            randomBtn.disabled = false;
+        }
     });
 
     // Add clear button handler
