@@ -261,20 +261,22 @@ export class FoodChainNetwork {
                 // Standardize the node ID
                 nodeId = standardizeAnimalName(nodeId);
                 
-                // Create placeholder data
+                // Initialize the placeholder data with empty arrays
                 const placeholderData: PlaceholderData = {
                     commonName: nodeId,
-                    note: "This node was created as a reference from another animal's relationships"
+                    note: "This node was created as a reference from another animal's relationships",
+                    eats: [],      // Initialize empty array
+                    eatenBy: []    // Initialize empty array
                 };
 
-                // Add relationship data
+                // Add the specific relationship
                 if (relationship === 'eats') {
                     placeholderData.eats = [sourceNode];
                 } else {
                     placeholderData.eatenBy = [sourceNode];
                 }
 
-                // Store the placeholder data in the global lastAnimalData
+                // Store the placeholder data
                 (window as any).lastAnimalData[nodeId] = placeholderData;
 
                 this.nodes.add({
@@ -308,15 +310,27 @@ export class FoodChainNetwork {
                     }
                 }
             } else {
-                // Node exists, update its relationships
+                // Node exists, ensure the data structure exists and has arrays
                 const existingData = (window as any).lastAnimalData[nodeId] as PlaceholderData;
-                if (relationship === 'eats') {
+                if (!existingData) {
+                    (window as any).lastAnimalData[nodeId] = {
+                        commonName: nodeId,
+                        note: "This node was created as a reference from another animal's relationships",
+                        eats: [],
+                        eatenBy: []
+                    };
+                } else {
+                    // Ensure arrays exist
                     existingData.eats = existingData.eats || [];
+                    existingData.eatenBy = existingData.eatenBy || [];
+                }
+
+                // Update the relationships
+                if (relationship === 'eats') {
                     if (!existingData.eats.includes(sourceNode)) {
                         existingData.eats.push(sourceNode);
                     }
                 } else {
-                    existingData.eatenBy = existingData.eatenBy || [];
                     if (!existingData.eatenBy.includes(sourceNode)) {
                         existingData.eatenBy.push(sourceNode);
                     }
