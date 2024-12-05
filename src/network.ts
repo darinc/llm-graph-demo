@@ -1,5 +1,40 @@
 declare const vis: any;
 
+// Helper function for standardizing animal names
+function standardizeAnimalName(name: string): string {
+    // Common irregular plurals
+    const irregularPlurals: { [key: string]: string } = {
+        'mouse': 'mice',
+        'goose': 'geese',
+        'deer': 'deer',
+        'sheep': 'sheep',
+        'fish': 'fish',
+        'moose': 'moose',
+        'wolf': 'wolves',
+        'calf': 'calves',
+        'leaf': 'leaves',
+    };
+
+    name = name.toLowerCase().trim();
+
+    // Check for irregular plurals first
+    if (irregularPlurals[name]) {
+        return irregularPlurals[name];
+    }
+
+    // If it's already plural, return as is
+    if (name.endsWith('s')) {
+        return name;
+    }
+
+    // Regular pluralization
+    if (name.endsWith('y')) {
+        return name.slice(0, -1) + 'ies';
+    } else {
+        return name + 's';
+    }
+}
+
 interface Node {
     id: string;
     label: string;
@@ -16,6 +51,40 @@ interface PlaceholderData {
     note: string;
     eats?: string[];
     eatenBy?: string[];
+}
+
+export function standardizeAnimalName(name: string): string {
+    // Common irregular plurals
+    const irregularPlurals: { [key: string]: string } = {
+        'mouse': 'mice',
+        'goose': 'geese',
+        'deer': 'deer',
+        'sheep': 'sheep',
+        'fish': 'fish',
+        'moose': 'moose',
+        'wolf': 'wolves',
+        'calf': 'calves',
+        'leaf': 'leaves',
+    };
+
+    name = name.toLowerCase().trim();
+
+    // Check for irregular plurals first
+    if (irregularPlurals[name]) {
+        return irregularPlurals[name];
+    }
+
+    // If it's already plural, return as is
+    if (name.endsWith('s')) {
+        return name;
+    }
+
+    // Regular pluralization
+    if (name.endsWith('y')) {
+        return name.slice(0, -1) + 'ies';
+    } else {
+        return name + 's';
+    }
 }
 
 export interface AnimalData {
@@ -141,7 +210,13 @@ export class FoodChainNetwork {
     }
 
     addAnimal(animal: AnimalData) {
-        const label = animal.commonName.toLowerCase();
+        // Standardize the common name
+        const label = standardizeAnimalName(animal.commonName);
+        animal.commonName = label;  // Update the stored data
+        
+        // Standardize the prey and predator names
+        animal.eats = animal.eats.map(prey => standardizeAnimalName(prey));
+        animal.eatenBy = animal.eatenBy.map(predator => standardizeAnimalName(predator));
         
         // Define colors for each diet type
         const dietColors = {
@@ -183,6 +258,9 @@ export class FoodChainNetwork {
         // When adding placeholder nodes, use neutral color and minimum size
         const addPlaceholderNode = (nodeId: string, relationship: 'eats' | 'eatenBy', sourceNode: string) => {
             if (!this.nodes.get(nodeId)) {
+                // Standardize the node ID
+                nodeId = standardizeAnimalName(nodeId);
+                
                 // Create placeholder data
                 const placeholderData: PlaceholderData = {
                     commonName: nodeId,

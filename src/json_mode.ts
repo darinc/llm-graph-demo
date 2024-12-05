@@ -1,5 +1,5 @@
 import * as webllm from "@mlc-ai/web-llm";
-import { FoodChainNetwork, AnimalData } from './network';
+import { FoodChainNetwork, AnimalData, standardizeAnimalName } from './network';
 
 let nodeToReplace: string | null = null;
 let lastAnimalData: { [key: string]: AnimalData } = {};
@@ -23,9 +23,9 @@ async function extractJsonFromResponse(text: string): Promise<AnimalData> {
     return {
         genus: data.genus.toLowerCase(),
         species: data.species.toLowerCase(),
-        commonName: data.commonName.toLowerCase(),
-        eats: data.eats.map((item: string) => item.toLowerCase()),
-        eatenBy: data.eatenBy.map((item: string) => item.toLowerCase()),
+        commonName: standardizeAnimalName(data.commonName),
+        eats: data.eats.map((item: string) => standardizeAnimalName(item)),
+        eatenBy: data.eatenBy.map((item: string) => standardizeAnimalName(item)),
         size: Number(data.size),
         diet: data.diet.toLowerCase() as 'herbivore' | 'carnivore' | 'omnivore'
     };
@@ -101,7 +101,7 @@ async function main() {
     });
 
     submitBtn.addEventListener('click', async () => {
-        const animal = input.value.trim().toLowerCase();
+        const animal = standardizeAnimalName(input.value.trim());
         if (!animal) return;
 
         // Get spinner element
