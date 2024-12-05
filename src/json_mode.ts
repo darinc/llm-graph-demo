@@ -80,8 +80,21 @@ async function main() {
             const reply = await engine.chatCompletion(request);
             const message = await engine.getMessage();
             const animalData = await extractJsonFromResponse(message);
+            
+            // Check if we're updating an existing node
+            const existingNodes = Object.keys(lastAnimalData).filter(key => 
+                key.toLowerCase().includes(animal.toLowerCase()) || 
+                animal.toLowerCase().includes(key.toLowerCase())
+            );
+
+            if (existingNodes.length > 0) {
+                // Remove the old entry
+                delete lastAnimalData[existingNodes[0]];
+            }
+
+            // Add the new data
+            lastAnimalData[animalData.commonName] = animalData;
             network.addAnimal(animalData);
-            lastAnimalData[animalData.commonName] = animalData;  // Store the data
             input.value = ''; // Clear input
         } catch (error) {
             console.error("Error processing animal:", error);
