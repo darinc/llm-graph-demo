@@ -21,6 +21,29 @@
       #input-container {
         margin: 20px 0;
       }
+      button {
+        margin-right: 10px;
+        padding: 5px 10px;
+        cursor: pointer;
+      }
+      
+      #random-btn {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+      }
+      
+      #clear-btn {
+        background-color: #f44336;
+        color: white;
+        border: none;
+        border-radius: 4px;
+      }
+      
+      button:hover {
+        opacity: 0.8;
+      }
       .loading {
         opacity: 0.5;
         cursor: wait;
@@ -61,6 +84,8 @@
     <div id="input-container">
       <input type="text" id="animal-input" placeholder="Enter an animal...">
       <button id="submit-btn">Add to Food Chain</button>
+      <button id="random-btn">Random Animal</button>
+      <button id="clear-btn">Clear Network</button>
       <div id="loading-spinner" class="spinner"></div>
     </div>
     <div class="container">

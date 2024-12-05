@@ -56,6 +56,40 @@ async function main() {
         }
     });
 
+    // Add random animal button handler
+    const randomBtn = document.getElementById('random-btn');
+    const clearBtn = document.getElementById('clear-btn');
+    if (!randomBtn || !clearBtn) throw new Error("Buttons not found");
+
+    // List of common animals for random selection
+    const randomAnimals = [
+        "lion", "zebra", "elephant", "giraffe", "penguin", 
+        "shark", "eagle", "snake", "rabbit", "deer",
+        "wolf", "bear", "fox", "owl", "mouse",
+        "hawk", "salmon", "seal", "octopus", "butterfly"
+    ];
+
+    randomBtn.addEventListener('click', () => {
+        // Select a random animal from the list
+        const randomIndex = Math.floor(Math.random() * randomAnimals.length);
+        const randomAnimal = randomAnimals[randomIndex];
+        
+        // Set the input value and trigger the submit button
+        input.value = randomAnimal;
+        submitBtn.click();
+    });
+
+    // Add clear button handler
+    clearBtn.addEventListener('click', () => {
+        network.clear();
+        lastAnimalData = {};
+        (window as any).lastAnimalData = lastAnimalData;
+        const jsonDisplay = document.getElementById('json-display');
+        if (jsonDisplay) {
+            jsonDisplay.style.display = 'none';
+        }
+    });
+
     submitBtn.addEventListener('click', async () => {
         const animal = input.value.trim().toLowerCase();
         if (!animal) return;
