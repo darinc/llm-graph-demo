@@ -1,4 +1,15 @@
-import { Network, DataSet, Node, Edge } from 'vis-network';
+declare const vis: any;
+
+interface Node {
+    id: string;
+    label: string;
+}
+
+interface Edge {
+    from: string;
+    to: string;
+    label: string;
+}
 
 export interface AnimalData {
     genus: string;
@@ -13,8 +24,8 @@ export class FoodChainNetwork {
     private network: Network;
 
     constructor(container: HTMLElement) {
-        this.nodes = new DataSet<Node>();
-        this.edges = new DataSet<Edge>();
+        this.nodes = new vis.DataSet();
+        this.edges = new vis.DataSet();
 
         const data = {
             nodes: this.nodes,
