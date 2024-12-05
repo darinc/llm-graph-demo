@@ -201,6 +201,49 @@ export class FoodChainNetwork {
                 label: edge.label
             });
         });
+
+        // Get the animal data
+        const animalData = (window as any).lastAnimalData[newName];
+        if (animalData) {
+            // Add placeholder nodes for new relationships
+            animalData.eats.forEach(prey => {
+                if (!this.nodes.get(prey)) {
+                    this.nodes.add({
+                        id: prey,
+                        label: prey
+                    });
+                }
+                // Add edge if it doesn't exist
+                if (!this.edges.get({
+                    filter: edge => edge.from === newName && edge.to === prey
+                }).length) {
+                    this.edges.add({
+                        from: newName,
+                        to: prey,
+                        label: 'eats'
+                    });
+                }
+            });
+
+            animalData.eatenBy.forEach(predator => {
+                if (!this.nodes.get(predator)) {
+                    this.nodes.add({
+                        id: predator,
+                        label: predator
+                    });
+                }
+                // Add edge if it doesn't exist
+                if (!this.edges.get({
+                    filter: edge => edge.from === predator && edge.to === newName
+                }).length) {
+                    this.edges.add({
+                        from: predator,
+                        to: newName,
+                        label: 'eats'
+                    });
+                }
+            });
+        }
     }
 
     public debug() {
