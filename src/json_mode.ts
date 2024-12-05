@@ -257,6 +257,9 @@ async function main() {
             
             input.value = ''; // Clear input
         } catch (error) {
+            // Add simplified error to the action log
+            addLogEntry('llm-response', `Error processing ${animal}: ${error.message}`);
+            // Keep the detailed console.error for debugging
             console.error("Error processing animal:", error);
         } finally {
             // Remove loading state
