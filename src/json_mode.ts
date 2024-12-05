@@ -1,6 +1,7 @@
 import * as webllm from "@mlc-ai/web-llm";
 import { FoodChainNetwork, AnimalData } from './network';
 
+let nodeToReplace: string | null = null;
 let lastAnimalData: { [key: string]: AnimalData } = {};
 (window as any).lastAnimalData = lastAnimalData;
 
@@ -81,20 +82,29 @@ async function main() {
             const message = await engine.getMessage();
             const animalData = await extractJsonFromResponse(message);
             
-            // Check if we're updating an existing node
-            const existingNodes = Object.keys(lastAnimalData).filter(key => 
-                key.toLowerCase().includes(animal.toLowerCase()) || 
-                animal.toLowerCase().includes(key.toLowerCase())
-            );
-
-            if (existingNodes.length > 0) {
+            // If we have a nodeToReplace, use that instead of searching
+            if ((window as any).nodeToReplace) {
+                const oldName = (window as any).nodeToReplace;
                 // Remove the old entry
-                delete lastAnimalData[existingNodes[0]];
-            }
+                delete lastAnimalData[oldName];
+                // Add the new data
+                lastAnimalData[animalData.commonName] = animalData;
+                network.updateNodeAndNeighbors(oldName, animalData.commonName);
+                (window as any).nodeToReplace = null; // Clear the replacement flag
+            } else {
+                // Existing logic for new nodes
+                const existingNodes = Object.keys(lastAnimalData).filter(key => 
+                    key.toLowerCase().includes(animal.toLowerCase()) || 
+                    animal.toLowerCase().includes(key.toLowerCase())
+                );
 
-            // Add the new data
-            lastAnimalData[animalData.commonName] = animalData;
-            network.addAnimal(animalData);
+                if (existingNodes.length > 0) {
+                    delete lastAnimalData[existingNodes[0]];
+                }
+                lastAnimalData[animalData.commonName] = animalData;
+                network.addAnimal(animalData);
+            }
+            
             input.value = ''; // Clear input
         } catch (error) {
             console.error("Error processing animal:", error);

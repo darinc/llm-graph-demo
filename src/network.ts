@@ -117,6 +117,8 @@ export class FoodChainNetwork {
                     const input = document.getElementById('animal-input') as HTMLInputElement;
                     const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
                     if (input && submitBtn) {
+                        // Store the node to replace
+                        (window as any).nodeToReplace = node.label;
                         input.value = node.label;
                         submitBtn.click();
                     }
@@ -179,6 +181,26 @@ export class FoodChainNetwork {
     public clear() {
         this.nodes.clear();
         this.edges.clear();
+    }
+
+    public updateNodeAndNeighbors(oldName: string, newName: string) {
+        // Get all edges connected to this node
+        const edges = this.edges.get({
+            filter: edge => edge.from === oldName || edge.to === oldName
+        });
+
+        // Update the node itself
+        this.updateNodeLabel(oldName, newName);
+
+        // Update all connected edges
+        edges.forEach(edge => {
+            this.edges.remove(edge.id);
+            this.edges.add({
+                from: edge.from === oldName ? newName : edge.from,
+                to: edge.to === oldName ? newName : edge.to,
+                label: edge.label
+            });
+        });
     }
 
     public debug() {
