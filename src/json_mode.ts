@@ -37,6 +37,12 @@ async function main() {
     const submitBtn = document.getElementById('submit-btn');
     if (!input || !submitBtn) throw new Error("UI elements not found");
 
+    input.addEventListener('keypress', async (event) => {
+        if (event.key === 'Enter') {
+            submitBtn.click();  // Trigger the click event on the submit button
+        }
+    });
+
     submitBtn.addEventListener('click', async () => {
         const animal = input.value.trim();
         if (!animal) return;
@@ -56,11 +62,11 @@ async function main() {
             messages: [
                 {
                     role: "system",
-                    content: "You are a biology expert. Respond only with JSON containing genus, species, what the animal eats (prey), and what eats it (predators)."
+                    content: "You are a biology expert. Respond only with JSON containing genus, species, common name, what the animal eats (prey), and what eats it (predators). Use common names for the eats and eatenBy arrays."
                 },
                 {
                     role: "user",
-                    content: `Provide information about ${animal} in this JSON format: {"genus": "", "species": "", "eats": [], "eatenBy": []}`
+                    content: `Provide information about ${animal} in this JSON format: {"genus": "", "species": "", "commonName": "", "eats": [], "eatenBy": []}`
                 }
             ],
             max_tokens: 256,

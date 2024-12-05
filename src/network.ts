@@ -14,6 +14,7 @@ interface Edge {
 export interface AnimalData {
     genus: string;
     species: string;
+    commonName: string;
     eats: string[];
     eatenBy: string[];
 }
@@ -51,7 +52,7 @@ export class FoodChainNetwork {
     }
 
     addAnimal(animal: AnimalData) {
-        const label = `${animal.genus} ${animal.species}`;
+        const label = animal.commonName;
         
         // Add node if it doesn't exist
         if (!this.nodes.get(label)) {
