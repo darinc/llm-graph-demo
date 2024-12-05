@@ -1,6 +1,37 @@
 import * as webllm from "@mlc-ai/web-llm";
 import { FoodChainNetwork, AnimalData, standardizeAnimalName } from './network';
 
+function mergeRelationships(
+    animalData: AnimalData,
+    network: FoodChainNetwork,
+    animalName: string
+): AnimalData {
+    // Get all edges connected to this node
+    const edges = network.edges.get({
+        filter: (edge: any) => edge.from === animalName || edge.to === animalName
+    });
+
+    // Create sets to avoid duplicates
+    const eatsSet = new Set(animalData.eats);
+    const eatenBySet = new Set(animalData.eatenBy);
+
+    // Add existing relationships from the network
+    edges.forEach((edge: any) => {
+        if (edge.from === animalName) {
+            eatsSet.add(edge.to);
+        } else if (edge.to === animalName) {
+            eatenBySet.add(edge.from);
+        }
+    });
+
+    // Update the animalData with merged relationships
+    return {
+        ...animalData,
+        eats: Array.from(eatsSet),
+        eatenBy: Array.from(eatenBySet)
+    };
+}
+
 let nodeToReplace: string | null = null;
 let lastAnimalData: { [key: string]: AnimalData } = {};
 let autoCompleteRunning = false;
@@ -171,8 +202,11 @@ async function main() {
         try {
             const reply = await engine.chatCompletion(request);
             const message = await engine.getMessage();
-            const animalData = await extractJsonFromResponse(message);
+            let animalData = await extractJsonFromResponse(message);
             
+            // Merge with existing relationships
+            animalData = mergeRelationships(animalData, network, animal);
+
             // If we have a nodeToReplace, use that instead of searching
             if ((window as any).nodeToReplace) {
                 const oldName = (window as any).nodeToReplace;
