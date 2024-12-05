@@ -116,28 +116,40 @@ async function main() {
 
         let contextPrompt = `Provide information about ${animal}`;
 
-        // Get existing relationships whether it's a placeholder or being replaced
-        const edges = network.edges.get({
-            filter: (edge: any) => edge.from === animal || edge.to === animal
-        });
-
-        // Build lists of current relationships
-        const currentlyEats: string[] = [];
-        const currentlyEatenBy: string[] = [];
-
-        edges.forEach((edge: any) => {
-            if (edge.from === animal) {
-                currentlyEats.push(edge.to);
-            } else {
-                currentlyEatenBy.push(edge.from);
+        // Check if this is a placeholder node being replaced
+        const existingData = (window as any).lastAnimalData[animal];
+        if (existingData && existingData.note) { // This indicates it's a placeholder
+            if (existingData.eats && existingData.eats.length > 0) {
+                contextPrompt += `. We know this animal eats: [${existingData.eats.join(', ')}]`;
             }
-        });
+            if (existingData.eatenBy && existingData.eatenBy.length > 0) {
+                contextPrompt += `. We know this animal is eaten by: [${existingData.eatenBy.join(', ')}]`;
+            }
+            contextPrompt += `. Please maintain these known relationships in your response while adding any additional relationships you know of.`;
+        } else {
+            // Get existing relationships from the network (for non-placeholder nodes)
+            const edges = network.edges.get({
+                filter: (edge: any) => edge.from === animal || edge.to === animal
+            });
 
-        // Add relationship context to the prompt
-        if (currentlyEats.length > 0 || currentlyEatenBy.length > 0) {
-            contextPrompt += `. Current known relationships - This animal eats: [${currentlyEats.join(', ')}]. `;
-            contextPrompt += `This animal is eaten by: [${currentlyEatenBy.join(', ')}]. `;
-            contextPrompt += `Please maintain these relationships in your response while adding any additional relationships you know of.`;
+            // Build lists of current relationships
+            const currentlyEats: string[] = [];
+            const currentlyEatenBy: string[] = [];
+
+            edges.forEach((edge: any) => {
+                if (edge.from === animal) {
+                    currentlyEats.push(edge.to);
+                } else {
+                    currentlyEatenBy.push(edge.from);
+                }
+            });
+
+            // Add relationship context to the prompt
+            if (currentlyEats.length > 0 || currentlyEatenBy.length > 0) {
+                contextPrompt += `. Current known relationships - This animal eats: [${currentlyEats.join(', ')}]. `;
+                contextPrompt += `This animal is eaten by: [${currentlyEatenBy.join(', ')}]. `;
+                contextPrompt += `Please maintain these relationships in your response while adding any additional relationships you know of.`;
+            }
         }
 
         const request: webllm.ChatCompletionRequest = {
