@@ -1,8 +1,8 @@
 declare const vis: any;
 
-// Helper function for standardizing animal names
+// Helper function for standardizing animal name
 export function standardizeAnimalName(name: string): string {
-    // Common irregular plurals
+    // Common irregular plurals mapping singular -> plural
     const irregularPlurals: { [key: string]: string } = {
         'sheep': 'sheep',
         'fish': 'fish',
@@ -12,43 +12,65 @@ export function standardizeAnimalName(name: string): string {
         'salmon': 'salmon',
         'shrimp': 'shrimp',
         'squid': 'squid',
-
-        // -f/-fe to -ves
+        'mouse': 'mice',
         'wolf': 'wolves',
         'calf': 'calves',
         'elf': 'elves',
-
-        // -ouse to -ice
-        'mouse': 'mice',
         'louse': 'lice',
         'grouse': 'grouse',
-
-        // -oose to -eese
         'goose': 'geese',
-
-        // Completely irregular
         'ox': 'oxen',
-
-        // -o endings
         'buffalo': 'buffalo',
         'flamingo': 'flamingos',
         'mosquito': 'mosquitoes',
-
-        // Latin derived
         'octopus': 'octopi',
         'hippopotamus': 'hippopotami',
-
-        // Special cases
         'platypus': 'platypuses',
-        'mongoose': 'mongooses'
-
+        'mongoose': 'mongooses',
+        'bird of prey': 'birds of prey',
+        'beast of burden': 'beasts of burden'
     };
+
+    // Create reverse mapping plural -> singular
+    const irregularSingulars: { [key: string]: string } = {};
+    for (const [singular, plural] of Object.entries(irregularPlurals)) {
+        irregularSingulars[plural] = singular;
+    }
 
     name = name.toLowerCase().trim();
 
-    // Check for irregular plurals first
+    // If it's already a known plural form, return it unchanged
+    if (irregularSingulars[name]) {
+        return name;
+    }
+
+    // Check for irregular plural mappings
     if (irregularPlurals[name]) {
         return irregularPlurals[name];
+    }
+
+    // Handle compound phrases with "of"
+    if (name.includes(' of ')) {
+        const parts = name.split(' ');
+        const firstWord = parts[0];
+        
+        // Check if first word is already a known plural
+        if (irregularSingulars[firstWord] || firstWord.endsWith('s')) {
+            return name;
+        }
+        
+        // Pluralize the first word
+        let pluralizedFirst;
+        if (irregularPlurals[firstWord]) {
+            pluralizedFirst = irregularPlurals[firstWord];
+        } else if (firstWord.endsWith('y')) {
+            pluralizedFirst = firstWord.slice(0, -1) + 'ies';
+        } else {
+            pluralizedFirst = firstWord + 's';
+        }
+        
+        parts[0] = pluralizedFirst;
+        return parts.join(' ');
     }
 
     // If it's already plural, return as is
