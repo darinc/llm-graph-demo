@@ -212,36 +212,64 @@ export class FoodChainNetwork {
     }
 
     public updateNodeAndNeighbors(oldName: string, newName: string) {
+        // Get the animal data first since we need it for styling
+        const animalData = (window as any).lastAnimalData[newName];
+        
+        // Define colors for each diet type
+        const dietColors = {
+            herbivore: '#4CAF50',  // Green
+            carnivore: '#f44336',  // Red
+            omnivore: '#FF9800'    // Orange
+        };
+
+        // Calculate node size
+        const baseSize = 20;
+        const maxSize = 50;
+        const sizeScale = Math.min(Math.max(animalData.size * 10, baseSize), maxSize);
+
         // Get all edges connected to this node
         const edges = this.edges.get({
             filter: edge => edge.from === oldName || edge.to === oldName
         });
 
-        // Update the node itself
-        this.updateNodeLabel(oldName, newName);
-
-        // Update all connected edges
-        edges.forEach(edge => {
-            this.edges.remove(edge.id);
-            this.edges.add({
-                from: edge.from === oldName ? newName : edge.from,
-                to: edge.to === oldName ? newName : edge.to,
-                label: edge.label
+        // Update the node itself with proper styling
+        const node = this.nodes.get(oldName);
+        if (node) {
+            this.nodes.remove(oldName);
+            this.nodes.add({
+                id: newName,
+                label: newName,
+                color: dietColors[animalData.diet],
+                size: sizeScale
             });
-        });
 
-        // Get the animal data
-        const animalData = (window as any).lastAnimalData[newName];
+            // Update all connected edges
+            edges.forEach(edge => {
+                this.edges.remove(edge.id);
+                this.edges.add({
+                    from: edge.from === oldName ? newName : edge.from,
+                    to: edge.to === oldName ? newName : edge.to,
+                    label: edge.label
+                });
+            });
+        }
+
         if (animalData) {
-            // Add placeholder nodes for new relationships
-            animalData.eats.forEach(prey => {
-                if (!this.nodes.get(prey)) {
+            // Add placeholder nodes for new relationships with proper styling
+            const addPlaceholderNode = (nodeId: string) => {
+                if (!this.nodes.get(nodeId)) {
                     this.nodes.add({
-                        id: prey,
-                        label: prey
+                        id: nodeId,
+                        label: nodeId,
+                        color: '#848484',  // Gray for unknown diet
+                        size: baseSize     // Minimum size for unknown animals
                     });
                 }
-                // Add edge if it doesn't exist
+            };
+
+            // Add new relationships
+            animalData.eats.forEach(prey => {
+                addPlaceholderNode(prey);
                 if (!this.edges.get({
                     filter: edge => edge.from === newName && edge.to === prey
                 }).length) {
@@ -254,13 +282,7 @@ export class FoodChainNetwork {
             });
 
             animalData.eatenBy.forEach(predator => {
-                if (!this.nodes.get(predator)) {
-                    this.nodes.add({
-                        id: predator,
-                        label: predator
-                    });
-                }
-                // Add edge if it doesn't exist
+                addPlaceholderNode(predator);
                 if (!this.edges.get({
                     filter: edge => edge.from === predator && edge.to === newName
                 }).length) {
