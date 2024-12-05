@@ -30,6 +30,7 @@ async function main() {
     const networkContainer = document.getElementById('mynetwork');
     if (!networkContainer) throw new Error("Network container not found");
     const network = new FoodChainNetwork(networkContainer);
+    (window as any).foodChainNetwork = network;
 
     // Setup input handling
     const input = document.getElementById('animal-input') as HTMLInputElement;

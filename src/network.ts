@@ -80,4 +80,9 @@ export class FoodChainNetwork {
             });
         });
     }
+
+    public clear() {
+        this.nodes.clear();
+        this.edges.clear();
+    }
 }
