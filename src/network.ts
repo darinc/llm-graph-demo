@@ -472,4 +472,54 @@ export class FoodChainNetwork {
         });
         return nodes.map(node => node.label);
     }
+
+    public getNetworkStats() {
+        const nodes = this.nodes.get();
+        const edges = this.edges.get();
+        
+        // Calculate node statistics
+        const totalNodes = nodes.length;
+        const placeholderNodes = nodes.filter(node => (node as any).placeholder).length;
+        const completeNodes = totalNodes - placeholderNodes;
+        
+        // Calculate edge statistics
+        const totalEdges = edges.length;
+        
+        // Calculate connection counts per node
+        const connectionCounts = new Map<string, number>();
+        nodes.forEach(node => {
+            const connected = edges.filter(edge => 
+                edge.from === node.id || edge.to === node.id
+            ).length;
+            connectionCounts.set(node.id, connected);
+        });
+        
+        // Find most connected node
+        let mostConnected = {node: '', count: 0};
+        connectionCounts.forEach((count, node) => {
+            if (count > mostConnected.count) {
+                mostConnected = {node, count};
+            }
+        });
+        
+        // Calculate average connections
+        const avgConnections = totalNodes > 0 
+            ? (totalEdges * 2 / totalNodes).toFixed(1) 
+            : '0';
+        
+        return {
+            nodes: {
+                total: totalNodes,
+                placeholders: placeholderNodes,
+                complete: completeNodes
+            },
+            edges: {
+                total: totalEdges,
+                mostConnected: mostConnected.count > 0 
+                    ? `${mostConnected.node} (${mostConnected.count})` 
+                    : '-',
+                avgConnections
+            }
+        };
+    }
 }
