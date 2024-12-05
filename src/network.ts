@@ -11,6 +11,13 @@ interface Edge {
     label: string;
 }
 
+interface PlaceholderData {
+    commonName: string;
+    note: string;
+    eats?: string[];
+    eatenBy?: string[];
+}
+
 export interface AnimalData {
     genus: string;
     species: string;
@@ -176,6 +183,22 @@ export class FoodChainNetwork {
         // When adding placeholder nodes, use neutral color and minimum size
         const addPlaceholderNode = (nodeId: string, relationship: 'eats' | 'eatenBy', sourceNode: string) => {
             if (!this.nodes.get(nodeId)) {
+                // Create placeholder data
+                const placeholderData: PlaceholderData = {
+                    commonName: nodeId,
+                    note: "This node was created as a reference from another animal's relationships"
+                };
+
+                // Add relationship data
+                if (relationship === 'eats') {
+                    placeholderData.eats = [sourceNode];
+                } else {
+                    placeholderData.eatenBy = [sourceNode];
+                }
+
+                // Store the placeholder data in the global lastAnimalData
+                (window as any).lastAnimalData[nodeId] = placeholderData;
+
                 this.nodes.add({
                     id: nodeId,
                     label: nodeId,
@@ -184,9 +207,8 @@ export class FoodChainNetwork {
                     placeholder: true  // Add this flag
                 });
 
-                // Add the relationship edge immediately
+                // Add the relationship edge
                 if (relationship === 'eats') {
-                    // This placeholder eats the source node
                     if (!this.edges.get({
                         filter: edge => edge.from === nodeId && edge.to === sourceNode
                     }).length) {
@@ -197,7 +219,6 @@ export class FoodChainNetwork {
                         });
                     }
                 } else {
-                    // This placeholder is eaten by the source node
                     if (!this.edges.get({
                         filter: edge => edge.from === sourceNode && edge.to === nodeId
                     }).length) {
@@ -206,6 +227,20 @@ export class FoodChainNetwork {
                             to: nodeId,
                             label: 'eats'
                         });
+                    }
+                }
+            } else {
+                // Node exists, update its relationships
+                const existingData = (window as any).lastAnimalData[nodeId] as PlaceholderData;
+                if (relationship === 'eats') {
+                    existingData.eats = existingData.eats || [];
+                    if (!existingData.eats.includes(sourceNode)) {
+                        existingData.eats.push(sourceNode);
+                    }
+                } else {
+                    existingData.eatenBy = existingData.eatenBy || [];
+                    if (!existingData.eatenBy.includes(sourceNode)) {
+                        existingData.eatenBy.push(sourceNode);
                     }
                 }
             }
