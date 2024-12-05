@@ -155,7 +155,9 @@ async function main() {
         const animal = standardizeAnimalName(input.value.trim());
         if (!animal) return;
 
-        addLogEntry('button', `User requested animal via text box: ${animal}`);
+        addLogEntry('button', autoCompleteRunning ? 
+            `Requesting animal via Automatic: ${animal}` : 
+            `User requested animal via text box: ${animal}`);
 
         // Get spinner element
         const spinner = document.getElementById('loading-spinner');
@@ -313,7 +315,7 @@ async function toggleAutomatic(
             // Select a random placeholder
             const randomIndex = Math.floor(Math.random() * placeholders.length);
             const randomPlaceholder = placeholders[randomIndex];
-            addLogEntry('button', `Auto-processing placeholder: ${randomPlaceholder}`);
+            addLogEntry('llm-request', `Auto-processing placeholder: ${randomPlaceholder}`);
 
             // Set the input value and trigger the submit button
             input.value = randomPlaceholder;
