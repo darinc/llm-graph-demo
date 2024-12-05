@@ -93,22 +93,30 @@ async function main() {
     const network = new FoodChainNetwork(networkContainer);
     (window as any).foodChainNetwork = network;
 
-    // After network initialization, show the template JSON
-    const jsonDisplay = document.getElementById('json-display');
-    const jsonContent = document.getElementById('json-content');
-    if (jsonDisplay && jsonContent) {
-        const template = {
-            "genus": "example_genus",
-            "species": "example_species", 
-            "commonName": "example animal",
-            "eats": ["prey1", "prey2"],
-            "eatenBy": ["predator1", "predator2"],
-            "size": 1.5,
-            "diet": "one of: herbivore, carnivore, omnivore, or insectivore"
-        };
-        jsonDisplay.style.display = 'block';
-        jsonContent.textContent = JSON.stringify(template, null, 2);
+    // Define template display function
+    function showTemplate() {
+        const jsonDisplay = document.getElementById('json-display');
+        const jsonContent = document.getElementById('json-content');
+        if (jsonDisplay && jsonContent) {
+            const systemPrompt = "You are a biology expert. Respond only with JSON containing genus, species, common name, what the animal eats (prey), what eats it (predators), size (in meters), and diet type. Use common names for the eats and eatenBy arrays. Use lowercase for all text. For diet, use only 'herbivore', 'carnivore', 'omnivore', or 'insectivore'. For size, provide the typical length or height in meters as a number.";
+            
+            const template = {
+                "genus": "example_genus",
+                "species": "example_species",
+                "commonName": "example animal",
+                "eats": ["prey1", "prey2"],
+                "eatenBy": ["predator1", "predator2"],
+                "size": 1.5,
+                "diet": "one of: herbivore, carnivore, omnivore, or insectivore"
+            };
+
+            jsonDisplay.style.display = 'block';
+            jsonContent.textContent = `System Prompt:\n${systemPrompt}\n\nTemplate JSON:\n${JSON.stringify(template, null, 2)}`;
+        }
     }
+
+    // Show template on initial load
+    showTemplate();
 
     // Setup input handling
     const input = document.getElementById('animal-input') as HTMLInputElement;
@@ -162,6 +170,15 @@ async function main() {
 
     const autoBtn = document.getElementById('auto-btn');
     if (!autoBtn) throw new Error("Auto button not found");
+
+    // Add template button handler
+    const templateBtn = document.getElementById('template-btn');
+    if (!templateBtn) throw new Error("Template button not found");
+
+    templateBtn.addEventListener('click', () => {
+        addLogEntry('button', 'User requested template to be shown');
+        showTemplate();
+    });
 
     autoBtn.addEventListener('click', () => {
         addLogEntry('button', autoCompleteRunning ? 'User stopped Automatic mode' : 'User started Automatic mode');
