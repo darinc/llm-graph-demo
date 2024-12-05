@@ -189,10 +189,13 @@ async function main() {
         const animal = standardizeAnimalName(input.value.trim());
         if (!animal) return;
 
-        // Only log if NOT in automatic mode
-        if (!autoCompleteRunning) {
+        // Only log if NOT in automatic mode AND NOT initiated by double-click
+        if (!autoCompleteRunning && !(window as any).doubleClickInitiated) {
             addLogEntry('button', `User requested animal via text box: ${animal}`);
         }
+        
+        // Reset the double-click flag
+        (window as any).doubleClickInitiated = false;
 
         // Get spinner element
         const spinner = document.getElementById('loading-spinner');
