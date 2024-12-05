@@ -32,6 +32,19 @@
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
       }
+      #json-display {
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #f9f9f9;
+        max-width: 800px;
+      }
+      #json-content {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        margin: 0;
+      }
     </style>
   </head>
 
@@ -43,6 +56,10 @@
       <div id="loading-spinner" class="spinner"></div>
     </div>
     <div id="mynetwork"></div>
+    <div id="json-display" style="display: none;">
+        <h3>Animal Details</h3>
+        <pre id="json-content"></pre>
+    </div>
     <label id="init-label"> </label>
 
     <script type="module" src="./json_mode.ts"></script>

@@ -1,6 +1,9 @@
 import * as webllm from "@mlc-ai/web-llm";
 import { FoodChainNetwork, AnimalData } from './network';
 
+let lastAnimalData: { [key: string]: AnimalData } = {};
+(window as any).lastAnimalData = lastAnimalData;
+
 function setLabel(id: string, text: string) {
     const label = document.getElementById(id);
     if (label == null) {
@@ -78,6 +81,7 @@ async function main() {
             const message = await engine.getMessage();
             const animalData = await extractJsonFromResponse(message);
             network.addAnimal(animalData);
+            lastAnimalData[animalData.commonName] = animalData;  // Store the data
             input.value = ''; // Clear input
         } catch (error) {
             console.error("Error processing animal:", error);

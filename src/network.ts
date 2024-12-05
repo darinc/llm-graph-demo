@@ -50,6 +50,36 @@ export class FoodChainNetwork {
 
         this.network = new vis.Network(container, data, options);
 
+        // Add single-click event handler
+        this.network.on('click', (params: any) => {
+            const jsonDisplay = document.getElementById('json-display');
+            const jsonContent = document.getElementById('json-content');
+            if (!jsonDisplay || !jsonContent) return;
+
+            // Check if a node was clicked
+            if (params.nodes.length > 0) {
+                const nodeId = params.nodes[0];
+                const node = this.nodes.get(nodeId);
+                if (node) {
+                    // Get the stored data from the global object
+                    const animalData = (window as any).lastAnimalData?.[node.label];
+                    if (animalData) {
+                        jsonDisplay.style.display = 'block';
+                        jsonContent.textContent = JSON.stringify(animalData, null, 2);
+                    } else {
+                        jsonDisplay.style.display = 'block';
+                        jsonContent.textContent = JSON.stringify({
+                            commonName: node.label,
+                            note: "This node was created as a reference from another animal's relationships"
+                        }, null, 2);
+                    }
+                }
+            } else {
+                // Clicked elsewhere, hide the display
+                jsonDisplay.style.display = 'none';
+            }
+        });
+
         // Add double-click event handler
         this.network.on('doubleClick', async (params: any) => {
             // Check if a node was clicked
