@@ -202,6 +202,16 @@ export class FoodChainNetwork {
                         // Store the node to replace
                         (window as any).nodeToReplace = node.label.toLowerCase();
                         input.value = node.label.toLowerCase();
+                        // Log the double-click action
+                        const logEntry = document.getElementById('log-entries');
+                        if (logEntry) {
+                            const entry = document.createElement('div');
+                            entry.className = 'log-entry input';
+                            const timestamp = new Date().toLocaleTimeString();
+                            entry.textContent = `[${timestamp}] User requested animal via double-click: ${node.label}`;
+                            logEntry.appendChild(entry);
+                            logEntry.scrollTop = logEntry.scrollHeight;
+                        }
                         submitBtn.click();
                     }
                 }

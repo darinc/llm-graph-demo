@@ -100,7 +100,7 @@ async function main() {
 
     input.addEventListener('keypress', async (event) => {
         if (event.key === 'Enter') {
-            addLogEntry('input', `Enter pressed with input: ${input.value}`);
+            addLogEntry('input', `User entered animal via text box: ${input.value}`);
             submitBtn.click();  // Trigger the click event on the submit button
         }
     });
@@ -123,7 +123,7 @@ async function main() {
         const randomIndex = Math.floor(Math.random() * randomAnimals.length);
         const randomAnimal = randomAnimals[randomIndex];
         
-        addLogEntry('button', `Random button clicked - selected: ${randomAnimal}`);
+        addLogEntry('button', `User clicked Random - selected: ${randomAnimal}`);
         
         // Set the input value and trigger the submit button
         input.value = randomAnimal;
@@ -132,7 +132,7 @@ async function main() {
 
     // Add clear button handler
     clearBtn.addEventListener('click', () => {
-        addLogEntry('button', 'Clear button clicked - network cleared');
+        addLogEntry('button', 'User clicked Clear - network cleared');
         network.clear();
         lastAnimalData = {};
         updateNetworkStats(network);
@@ -147,13 +147,15 @@ async function main() {
     if (!autoBtn) throw new Error("Auto button not found");
 
     autoBtn.addEventListener('click', () => {
-        addLogEntry('button', autoCompleteRunning ? 'Automatic mode stopped' : 'Automatic mode started');
+        addLogEntry('button', autoCompleteRunning ? 'User stopped Automatic mode' : 'User started Automatic mode');
         toggleAutomatic(network, input, submitBtn, autoBtn as HTMLButtonElement);
     });
 
     submitBtn.addEventListener('click', async () => {
         const animal = standardizeAnimalName(input.value.trim());
         if (!animal) return;
+
+        addLogEntry('button', `User requested animal via text box: ${animal}`);
 
         // Get spinner element
         const spinner = document.getElementById('loading-spinner');
