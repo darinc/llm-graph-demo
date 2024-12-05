@@ -180,7 +180,8 @@ export class FoodChainNetwork {
                     id: nodeId,
                     label: nodeId,
                     color: '#848484',  // Gray for unknown diet
-                    size: baseSize     // Minimum size for unknown animals
+                    size: baseSize,    // Minimum size for unknown animals
+                    placeholder: true  // Add this flag
                 });
             }
         };
@@ -302,5 +303,12 @@ export class FoodChainNetwork {
             edges: this.edges.get(),
             network: this.network
         });
+    }
+
+    public getPlaceholderNodes(): string[] {
+        const nodes = this.nodes.get({
+            filter: node => (node as any).placeholder === true
+        });
+        return nodes.map(node => node.label);
     }
 }

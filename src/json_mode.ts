@@ -3,6 +3,7 @@ import { FoodChainNetwork, AnimalData } from './network';
 
 let nodeToReplace: string | null = null;
 let lastAnimalData: { [key: string]: AnimalData } = {};
+let autoCompleteRunning = false;
 (window as any).lastAnimalData = lastAnimalData;
 
 function setLabel(id: string, text: string) {
@@ -92,6 +93,13 @@ async function main() {
         }
     });
 
+    const autoBtn = document.getElementById('auto-btn');
+    if (!autoBtn) throw new Error("Auto button not found");
+
+    autoBtn.addEventListener('click', () => {
+        autoCompletePlaceholders(network, input, submitBtn, autoBtn as HTMLButtonElement);
+    });
+
     submitBtn.addEventListener('click', async () => {
         const animal = input.value.trim().toLowerCase();
         if (!animal) return;
@@ -161,6 +169,43 @@ async function main() {
             input.classList.remove('loading');
         }
     });
+}
+
+async function autoCompletePlaceholders(
+    network: FoodChainNetwork, 
+    input: HTMLInputElement, 
+    submitBtn: HTMLButtonElement,
+    autoBtn: HTMLButtonElement
+) {
+    if (autoCompleteRunning) {
+        autoCompleteRunning = false;
+        autoBtn.textContent = "Auto Complete";
+        return;
+    }
+
+    autoCompleteRunning = true;
+    autoBtn.textContent = "Stop";
+
+    while (autoCompleteRunning) {
+        const placeholders = network.getPlaceholderNodes();
+        if (placeholders.length === 0) {
+            autoCompleteRunning = false;
+            autoBtn.textContent = "Auto Complete";
+            break;
+        }
+
+        // Select a random placeholder
+        const randomIndex = Math.floor(Math.random() * placeholders.length);
+        const randomPlaceholder = placeholders[randomIndex];
+
+        // Set the input value and trigger the submit button
+        input.value = randomPlaceholder;
+        await new Promise(resolve => setTimeout(resolve, 500)); // Small delay
+        submitBtn.click();
+
+        // Wait for the response
+        await new Promise(resolve => setTimeout(resolve, 5000)); // Adjust timing as needed
+    }
 }
 
 main();
