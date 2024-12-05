@@ -73,6 +73,46 @@
       button:hover {
         opacity: 0.8;
       }
+      .log-container {
+        margin-top: 20px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 10px;
+        background-color: #f9f9f9;
+      }
+
+      #log-entries {
+        height: 100px;
+        overflow-y: auto;
+        font-family: monospace;
+        font-size: 14px;
+        background-color: white;
+        border: 1px solid #ddd;
+        padding: 5px;
+      }
+
+      .log-entry {
+        margin: 2px 0;
+        padding: 2px 5px;
+        border-left: 3px solid;
+      }
+
+      .log-entry.button {
+        border-left-color: #2196F3;
+      }
+
+      .log-entry.input {
+        border-left-color: #4CAF50;
+      }
+
+      .log-entry.llm-request {
+        border-left-color: #FF9800;
+      }
+
+      .log-entry.llm-response {
+        border-left-color: #9C27B0;
+      }
+
       .loading {
         opacity: 0.5;
         cursor: wait;
@@ -138,6 +178,10 @@
             <pre id="json-content"></pre>
         </div>
       </div>
+    </div>
+    <div id="action-log" class="log-container">
+      <h3>Action Log</h3>
+      <div id="log-entries"></div>
     </div>
     <label id="init-label"> </label>
 

@@ -1,4 +1,18 @@
 import * as webllm from "@mlc-ai/web-llm";
+
+// Logging functionality
+function addLogEntry(type: 'button' | 'input' | 'llm-request' | 'llm-response', message: string) {
+    const logContainer = document.getElementById('log-entries');
+    if (!logContainer) return;
+
+    const entry = document.createElement('div');
+    entry.className = `log-entry ${type}`;
+    const timestamp = new Date().toLocaleTimeString();
+    entry.textContent = `[${timestamp}] ${message}`;
+    
+    logContainer.appendChild(entry);
+    logContainer.scrollTop = logContainer.scrollHeight; // Auto-scroll to bottom
+}
 import { FoodChainNetwork, AnimalData, standardizeAnimalName } from './network';
 
 function mergeRelationships(
@@ -86,6 +100,7 @@ async function main() {
 
     input.addEventListener('keypress', async (event) => {
         if (event.key === 'Enter') {
+            addLogEntry('input', `Enter pressed with input: ${input.value}`);
             submitBtn.click();  // Trigger the click event on the submit button
         }
     });
@@ -108,6 +123,8 @@ async function main() {
         const randomIndex = Math.floor(Math.random() * randomAnimals.length);
         const randomAnimal = randomAnimals[randomIndex];
         
+        addLogEntry('button', `Random button clicked - selected: ${randomAnimal}`);
+        
         // Set the input value and trigger the submit button
         input.value = randomAnimal;
         submitBtn.click();
@@ -115,6 +132,7 @@ async function main() {
 
     // Add clear button handler
     clearBtn.addEventListener('click', () => {
+        addLogEntry('button', 'Clear button clicked - network cleared');
         network.clear();
         lastAnimalData = {};
         updateNetworkStats(network);
@@ -129,6 +147,7 @@ async function main() {
     if (!autoBtn) throw new Error("Auto button not found");
 
     autoBtn.addEventListener('click', () => {
+        addLogEntry('button', autoCompleteRunning ? 'Automatic mode stopped' : 'Automatic mode started');
         toggleAutomatic(network, input, submitBtn, autoBtn as HTMLButtonElement);
     });
 
@@ -201,9 +220,11 @@ async function main() {
         };
 
         try {
+            addLogEntry('llm-request', `Requesting data for: ${animal}`);
             const reply = await engine.chatCompletion(request);
             const message = await engine.getMessage();
             let animalData = await extractJsonFromResponse(message);
+            addLogEntry('llm-response', `Received data for: ${animalData.commonName}`);
             
             // Merge with existing relationships
             animalData = mergeRelationships(animalData, network, animal);
@@ -277,6 +298,7 @@ async function toggleAutomatic(
         while (autoCompleteRunning) {
             const placeholders = network.getPlaceholderNodes();
             if (placeholders.length === 0) {
+                addLogEntry('button', 'Automatic mode completed - no more placeholders');
                 autoCompleteRunning = false;
                 autoBtn.textContent = "Automatic";
                 autoBtn.style.backgroundColor = "#2196F3";
@@ -286,6 +308,7 @@ async function toggleAutomatic(
             // Select a random placeholder
             const randomIndex = Math.floor(Math.random() * placeholders.length);
             const randomPlaceholder = placeholders[randomIndex];
+            addLogEntry('button', `Auto-processing placeholder: ${randomPlaceholder}`);
 
             // Set the input value and trigger the submit button
             input.value = randomPlaceholder;
