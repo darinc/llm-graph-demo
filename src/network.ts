@@ -85,4 +85,12 @@ export class FoodChainNetwork {
         this.nodes.clear();
         this.edges.clear();
     }
+
+    public debug() {
+        console.log({
+            nodes: this.nodes.get(),
+            edges: this.edges.get(),
+            network: this.network
+        });
+    }
 }
