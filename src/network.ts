@@ -327,7 +327,6 @@ export class FoodChainNetwork {
         // Add edges for what it eats
         animal.eats.forEach(prey => {
             addPlaceholderNode(prey, 'eatenBy', label);
-            // Check if edge already exists
             if (!this.edges.get({
                 filter: edge => edge.from === label && edge.to === prey
             }).length) {
@@ -341,8 +340,8 @@ export class FoodChainNetwork {
 
         // Add edges for what eats it
         animal.eatenBy.forEach(predator => {
+            // Create placeholder nodes for predators if they don't exist
             addPlaceholderNode(predator, 'eats', label);
-            // Check if edge already exists
             if (!this.edges.get({
                 filter: edge => edge.from === predator && edge.to === label
             }).length) {
