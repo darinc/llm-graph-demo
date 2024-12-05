@@ -189,21 +189,31 @@ export class FoodChainNetwork {
         // Add edges for what it eats
         animal.eats.forEach(prey => {
             addPlaceholderNode(prey);
-            this.edges.add({
-                from: label,
-                to: prey,
-                label: 'eats'
-            });
+            // Check if edge already exists
+            if (!this.edges.get({
+                filter: edge => edge.from === label && edge.to === prey
+            }).length) {
+                this.edges.add({
+                    from: label,
+                    to: prey,
+                    label: 'eats'
+                });
+            }
         });
 
         // Add edges for what eats it
         animal.eatenBy.forEach(predator => {
             addPlaceholderNode(predator);
-            this.edges.add({
-                from: predator,
-                to: label,
-                label: 'eats'
-            });
+            // Check if edge already exists
+            if (!this.edges.get({
+                filter: edge => edge.from === predator && edge.to === label
+            }).length) {
+                this.edges.add({
+                    from: predator,
+                    to: label,
+                    label: 'eats'
+                });
+            }
         });
     }
 
