@@ -223,7 +223,7 @@ export class FoodChainNetwork {
             herbivore: '#4CAF50',  // Green
             carnivore: '#f44336',  // Red
             omnivore: '#FF9800',   // Orange
-            insectivore: '#9C27B0' // Purple
+            insectivore: '#AC57F0' // Purple
         };
 
         // Calculate node size (min 20, max 50)
