@@ -41,6 +41,16 @@ async function main() {
         const animal = input.value.trim();
         if (!animal) return;
 
+        // Get spinner element
+        const spinner = document.getElementById('loading-spinner');
+        if (!spinner) throw new Error("Spinner not found");
+
+        // Show loading state
+        submitBtn.classList.add('loading');
+        submitBtn.disabled = true;
+        spinner.style.display = 'inline-block';
+        input.classList.add('loading');
+
         const request: webllm.ChatCompletionRequest = {
             stream: false,
             messages: [
@@ -65,6 +75,12 @@ async function main() {
             input.value = ''; // Clear input
         } catch (error) {
             console.error("Error processing animal:", error);
+        } finally {
+            // Remove loading state
+            submitBtn.classList.remove('loading');
+            submitBtn.disabled = false;
+            spinner.style.display = 'none';
+            input.classList.remove('loading');
         }
     });
 }
