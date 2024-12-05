@@ -21,7 +21,7 @@ export interface AnimalData {
 export class FoodChainNetwork {
     private nodes: DataSet<Node>;
     private edges: DataSet<Edge>;
-    private network: Network;
+    private network: any;
 
     constructor(container: HTMLElement) {
         this.nodes = new vis.DataSet();
@@ -47,7 +47,7 @@ export class FoodChainNetwork {
             }
         };
 
-        this.network = new Network(container, data, options);
+        this.network = new vis.Network(container, data, options);
     }
 
     addAnimal(animal: AnimalData) {
