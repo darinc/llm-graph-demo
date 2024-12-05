@@ -18,6 +18,28 @@
         border: 1px solid lightgray;
       }
 
+      .right-panel {
+        flex: 1;          /* Take remaining space */
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .panel-section {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #f9f9f9;
+      }
+
+      #network-stats {
+        margin: 0;
+      }
+
+      #json-display {
+        flex: 1;
+      }
+
       #input-container {
         margin: 20px 0;
       }
@@ -69,15 +91,6 @@
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
       }
-      #json-display {
-        flex: 1;          /* Take remaining space */
-        margin-top: 0;    /* Remove top margin since we're using flex gap */
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        background-color: #f9f9f9;
-        height: fit-content;
-      }
       #json-content {
         white-space: pre-wrap;
         word-wrap: break-word;
@@ -98,31 +111,33 @@
     </div>
     <div class="container">
       <div id="mynetwork"></div>
-      <div id="json-display" style="display: none;">
-          <h3>Animal Details</h3>
-          <pre id="json-content"></pre>
-      </div>
-    </div>
-    <div id="network-stats" style="margin-top: 20px; padding: 10px; background-color: #f5f5f5; border-radius: 4px;">
-        <h3>Network Statistics</h3>
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-            <div>
-                <strong>Nodes:</strong>
-                <ul id="node-stats" style="margin: 5px 0;">
-                    <li>Total: <span id="total-nodes">0</span></li>
-                    <li>Placeholders: <span id="placeholder-nodes">0</span></li>
-                    <li>Complete: <span id="complete-nodes">0</span></li>
-                </ul>
-            </div>
-            <div>
-                <strong>Relationships:</strong>
-                <ul id="edge-stats" style="margin: 5px 0;">
-                    <li>Total Connections: <span id="total-edges">0</span></li>
-                    <li>Most Connected: <span id="most-connected">-</span></li>
-                    <li>Average Connections: <span id="avg-connections">0</span></li>
-                </ul>
+      <div class="right-panel">
+        <div id="network-stats" class="panel-section">
+            <h3>Network Statistics</h3>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                <div>
+                    <strong>Nodes:</strong>
+                    <ul id="node-stats" style="margin: 5px 0;">
+                        <li>Total: <span id="total-nodes">0</span></li>
+                        <li>Placeholders: <span id="placeholder-nodes">0</span></li>
+                        <li>Complete: <span id="complete-nodes">0</span></li>
+                    </ul>
+                </div>
+                <div>
+                    <strong>Relationships:</strong>
+                    <ul id="edge-stats" style="margin: 5px 0;">
+                        <li>Total Connections: <span id="total-edges">0</span></li>
+                        <li>Most Connected: <span id="most-connected">-</span></li>
+                        <li>Average Connections: <span id="avg-connections">0</span></li>
+                    </ul>
+                </div>
             </div>
         </div>
+        <div id="json-display" class="panel-section" style="display: none;">
+            <h3>Animal Details</h3>
+            <pre id="json-content"></pre>
+        </div>
+      </div>
     </div>
     <label id="init-label"> </label>
 
