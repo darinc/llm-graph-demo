@@ -303,17 +303,27 @@ async function main() {
                 network.updateNodeAndNeighbors(oldName, animalData.commonName);
                 (window as any).nodeToReplace = null; // Clear the replacement flag
             } else {
-                // Existing logic for new nodes
-                const existingNodes = Object.keys(lastAnimalData).filter(key => 
-                    key.toLowerCase().includes(animal.toLowerCase()) || 
-                    animal.toLowerCase().includes(key.toLowerCase())
-                );
+                // Check if the node already exists
+                const existingNode = network.nodes.get(animalData.commonName);
+                if (existingNode) {
+                    // Update the existing node's data
+                    lastAnimalData[animalData.commonName] = animalData;
+                    // Just update the relationships without recreating the node
+                    network.updateNodeAndNeighbors(animalData.commonName, animalData.commonName);
+                    addLogEntry('llm-response', `Updated existing node: ${animalData.commonName}`);
+                } else {
+                    // Handle new node creation as before
+                    const existingNodes = Object.keys(lastAnimalData).filter(key => 
+                        key.toLowerCase().includes(animal.toLowerCase()) || 
+                        animal.toLowerCase().includes(key.toLowerCase())
+                    );
 
-                if (existingNodes.length > 0) {
-                    delete lastAnimalData[existingNodes[0]];
+                    if (existingNodes.length > 0) {
+                        delete lastAnimalData[existingNodes[0]];
+                    }
+                    lastAnimalData[animalData.commonName] = animalData;
+                    network.addAnimal(animalData);
                 }
-                lastAnimalData[animalData.commonName] = animalData;
-                network.addAnimal(animalData);
                 updateNetworkStats(network);
             }
             
