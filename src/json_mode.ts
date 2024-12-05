@@ -16,7 +16,16 @@ function setLabel(id: string, text: string) {
 async function extractJsonFromResponse(text: string): Promise<AnimalData> {
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error("No JSON found in response");
-    return JSON.parse(jsonMatch[0]);
+    const data = JSON.parse(jsonMatch[0]);
+    
+    // Convert all strings to lowercase
+    return {
+        genus: data.genus.toLowerCase(),
+        species: data.species.toLowerCase(),
+        commonName: data.commonName.toLowerCase(),
+        eats: data.eats.map((item: string) => item.toLowerCase()),
+        eatenBy: data.eatenBy.map((item: string) => item.toLowerCase())
+    };
 }
 
 async function main() {
@@ -48,7 +57,7 @@ async function main() {
     });
 
     submitBtn.addEventListener('click', async () => {
-        const animal = input.value.trim();
+        const animal = input.value.trim().toLowerCase();
         if (!animal) return;
 
         // Get spinner element
@@ -66,7 +75,7 @@ async function main() {
             messages: [
                 {
                     role: "system",
-                    content: "You are a biology expert. Respond only with JSON containing genus, species, common name, what the animal eats (prey), and what eats it (predators). Use common names for the eats and eatenBy arrays."
+                    content: "You are a biology expert. Respond only with JSON containing genus, species, common name, what the animal eats (prey), and what eats it (predators). Use common names for the eats and eatenBy arrays. Use lowercase for all text."
                 },
                 {
                     role: "user",

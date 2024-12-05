@@ -88,7 +88,7 @@ export class FoodChainNetwork {
                 const node = this.nodes.get(nodeId);
                 if (node) {
                     // Get the stored data from the global object
-                    const animalData = (window as any).lastAnimalData?.[node.label];
+                    const animalData = (window as any).lastAnimalData?.[node.label.toLowerCase()];
                     if (animalData) {
                         jsonDisplay.style.display = 'block';
                         jsonContent.textContent = JSON.stringify(animalData, null, 2);
@@ -118,8 +118,8 @@ export class FoodChainNetwork {
                     const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
                     if (input && submitBtn) {
                         // Store the node to replace
-                        (window as any).nodeToReplace = node.label;
-                        input.value = node.label;
+                        (window as any).nodeToReplace = node.label.toLowerCase();
+                        input.value = node.label.toLowerCase();
                         submitBtn.click();
                     }
                 }
@@ -128,7 +128,7 @@ export class FoodChainNetwork {
     }
 
     addAnimal(animal: AnimalData) {
-        const label = animal.commonName;
+        const label = animal.commonName.toLowerCase();
         
         // Check if this animal might be a more specific version of an existing node
         const existingNodes = this.nodes.get({
