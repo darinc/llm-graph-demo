@@ -24,7 +24,9 @@ async function extractJsonFromResponse(text: string): Promise<AnimalData> {
         species: data.species.toLowerCase(),
         commonName: data.commonName.toLowerCase(),
         eats: data.eats.map((item: string) => item.toLowerCase()),
-        eatenBy: data.eatenBy.map((item: string) => item.toLowerCase())
+        eatenBy: data.eatenBy.map((item: string) => item.toLowerCase()),
+        size: Number(data.size),
+        diet: data.diet.toLowerCase() as 'herbivore' | 'carnivore' | 'omnivore'
     };
 }
 
@@ -109,11 +111,11 @@ async function main() {
             messages: [
                 {
                     role: "system",
-                    content: "You are a biology expert. Respond only with JSON containing genus, species, common name, what the animal eats (prey), and what eats it (predators). Use common names for the eats and eatenBy arrays. Use lowercase for all text."
+                    content: "You are a biology expert. Respond only with JSON containing genus, species, common name, what the animal eats (prey), what eats it (predators), size (in meters), and diet type. Use common names for the eats and eatenBy arrays. Use lowercase for all text. For diet, use only 'herbivore', 'carnivore', or 'omnivore'. For size, provide the typical length or height in meters as a number."
                 },
                 {
                     role: "user",
-                    content: `Provide information about ${animal} in this JSON format: {"genus": "", "species": "", "commonName": "", "eats": [], "eatenBy": []}`
+                    content: `Provide information about ${animal} in this JSON format: {"genus": "", "species": "", "commonName": "", "eats": [], "eatenBy": [], "size": 0, "diet": ""}`
                 }
             ],
             max_tokens: 256,

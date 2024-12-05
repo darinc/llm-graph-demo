@@ -17,6 +17,8 @@ export interface AnimalData {
     commonName: string;
     eats: string[];
     eatenBy: string[];
+    size: number;     // Size in meters (length or height)
+    diet: 'herbivore' | 'carnivore' | 'omnivore';
 }
 
 export class FoodChainNetwork {
@@ -64,6 +66,10 @@ export class FoodChainNetwork {
                 shape: 'circle',
                 font: {
                     size: 20
+                },
+                scaling: {
+                    min: 20,
+                    max: 50
                 }
             },
             edges: {
@@ -130,31 +136,58 @@ export class FoodChainNetwork {
     addAnimal(animal: AnimalData) {
         const label = animal.commonName.toLowerCase();
         
+        // Define colors for each diet type
+        const dietColors = {
+            herbivore: '#4CAF50',  // Green
+            carnivore: '#f44336',  // Red
+            omnivore: '#FF9800'    // Orange
+        };
+
+        // Calculate node size (min 20, max 50)
+        const baseSize = 20;
+        const maxSize = 50;
+        const sizeScale = Math.min(Math.max(animal.size * 10, baseSize), maxSize);
+        
         // Check if this animal might be a more specific version of an existing node
         const existingNodes = this.nodes.get({
-            filter: node => node.label.toLowerCase().includes(label.toLowerCase()) || 
-                          label.toLowerCase().includes(node.label.toLowerCase())
+            filter: node => node.label.toLowerCase().includes(label) || 
+                          label.includes(node.label.toLowerCase())
         });
 
         if (existingNodes.length > 0) {
-            // Update the existing node with the new label
-            this.updateNodeLabel(existingNodes[0].label, label);
+            // Update the existing node with the new label and properties
+            this.nodes.remove(existingNodes[0].label);
+            this.nodes.add({
+                id: label,
+                label: label,
+                color: dietColors[animal.diet],
+                size: sizeScale
+            });
         } else if (!this.nodes.get(label)) {
             // Add new node if it doesn't exist
             this.nodes.add({
                 id: label,
-                label: label
+                label: label,
+                color: dietColors[animal.diet],
+                size: sizeScale
             });
         }
 
-        // Add edges for what it eats
-        animal.eats.forEach(prey => {
-            if (!this.nodes.get(prey)) {
+        // When adding placeholder nodes, use neutral color and minimum size
+        const addPlaceholderNode = (nodeId: string) => {
+            if (!this.nodes.get(nodeId)) {
                 this.nodes.add({
-                    id: prey,
-                    label: prey
+                    id: nodeId,
+                    label: nodeId,
+                    color: '#848484',  // Gray for unknown diet
+                    size: baseSize     // Minimum size for unknown animals
                 });
             }
+        };
+
+        // Add edges for what it eats
+        animal.eats.forEach(prey => {
+            addPlaceholderNode(prey);
             this.edges.add({
                 from: label,
                 to: prey,
@@ -164,12 +197,7 @@ export class FoodChainNetwork {
 
         // Add edges for what eats it
         animal.eatenBy.forEach(predator => {
-            if (!this.nodes.get(predator)) {
-                this.nodes.add({
-                    id: predator,
-                    label: predator
-                });
-            }
+            addPlaceholderNode(predator);
             this.edges.add({
                 from: predator,
                 to: label,
